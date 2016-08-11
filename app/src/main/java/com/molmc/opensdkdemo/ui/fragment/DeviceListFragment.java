@@ -138,6 +138,17 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
 		subDeviceStatus();
 	}
 
+
+	@Override
+	public void onFail(TaskException exception) {
+		swipeRefreshLayout.setRefreshing(false);
+		if (devices == null || devices.size() < 1) {
+			layoutEmpty.setVisibility(View.VISIBLE);
+		} else {
+			layoutEmpty.setVisibility(View.GONE);
+		}
+	}
+
 	private void subDeviceStatus(){
 		if (devices==null){
 			return;
@@ -156,18 +167,6 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
 			}, this);
 		}
 	}
-
-	@Override
-	public void onFail(TaskException exception) {
-		swipeRefreshLayout.setRefreshing(false);
-		if (devices == null || devices.size() < 1) {
-			layoutEmpty.setVisibility(View.VISIBLE);
-		} else {
-			layoutEmpty.setVisibility(View.GONE);
-		}
-		showToast(exception.getMessage());
-	}
-
 
 	@OnClick(R.id.btnAddDevice)
 	public void onClick() {

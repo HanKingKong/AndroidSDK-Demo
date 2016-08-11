@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.molmc.opensdk.bean.AppTokenBean;
 import com.molmc.opensdk.bean.UserTokenBean;
 import com.molmc.opensdk.http.HttpCallback;
@@ -103,6 +104,7 @@ public class LoginActivity extends BaseActivity {
 			userBean.setPhone(account);
 		}
 		userBean.setPassword(password);
+		Logger.i(new Gson().toJson(userBean));
 		IntoRobotAPI.getInstance().userLogin(userBean, new HttpCallback<UserTokenBean>() {
 			@Override
 			public void onSuccess(int code, UserTokenBean result) {

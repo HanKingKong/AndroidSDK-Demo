@@ -12,8 +12,8 @@ import com.molmc.opensdk.openapi.IntoRobotAPI;
 
 public class MyApplication extends Application {
 
-	private String appId = "e8554799f71386bb81847b7e97817258";
-	private String appKey = "1c7caab5ebfe50556c24d963067327cb";
+	private String appId = "9fd012a7437774377104cdb0c348a72a";
+	private String appKey = "28e3d403affbe11fb37b593cd1fd2eef";
 
 	private static MyApplication instance;
 
@@ -24,7 +24,7 @@ public class MyApplication extends Application {
 		//初始化SDK
 		IntoRobotAPI.getInstance().initApp(getApplicationContext(), appId, appKey);
 		//打印调试信息
-//		IntoRobotAPI.getInstance().setDebug(true);
+		IntoRobotAPI.getInstance().setDebug(true);
 	}
 
 	public static MyApplication getInstance(){
