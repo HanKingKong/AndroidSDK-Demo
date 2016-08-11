@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:gravity="center"
+	android:padding="@dimen/item_padding"
+	android:orientation="vertical">
+
+	<com.anderson.dashboardview.view.DashboardView
+		android:id="@+id/dashPanel"
+		android:layout_width="200dp"
+		android:layout_height="200dp"
+		android:layout_gravity="center"
+		android:text="当前速度"
+		android:textSize="11sp"
+		app:Unit="m/s"
+		app:endProgressColor="@color/end_color"
+		app:maxNumber="100"
+		app:startProgressColor="@color/start_color"/>
+</LinearLayout>

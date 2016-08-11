@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:gravity="center"
+	android:orientation="vertical"
+	android:padding="@dimen/item_padding">
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		style="@style/body_text"/>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<EditText
+			android:id="@+id/etContent"
+			style="@style/input_style"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_centerInParent="true"
+			android:layout_toLeftOf="@+id/btnSend"
+			android:background="@drawable/input_round_background"
+			android:hint="@string/input_hint"
+			android:padding="10dp"
+			android:scrollHorizontally="false"
+			android:singleLine="false"/>
+
+		<TextView
+			android:id="@+id/btnSend"
+			style="@style/input_style"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:layout_centerInParent="true"
+			android:layout_marginLeft="10dp"
+			android:background="@drawable/selector_corners_button"
+			android:padding="10dp"
+			android:text="@string/send"/>
+	</RelativeLayout>
+</LinearLayout>

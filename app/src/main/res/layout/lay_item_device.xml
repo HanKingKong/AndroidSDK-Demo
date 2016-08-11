@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/itemDevice"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:background="@drawable/list_item_selector"
+	android:gravity="center"
+	android:orientation="vertical"
+	android:padding="5dp">
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:gravity="center">
+
+		<ImageView
+			android:id="@+id/imgPhoto"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:minHeight="100dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/placeholder_transparent"/>
+
+		<TextView
+			android:id="@+id/onlineStatus"
+			android:layout_width="8dp"
+			android:layout_height="8dp"
+			android:layout_above="@+id/linearLayout"
+			android:layout_alignParentRight="true"
+			android:layout_marginBottom="5dp"
+			android:layout_marginRight="5dp"
+			android:background="@drawable/shape_online"
+			android:visibility="gone"/>
+
+		<LinearLayout
+			android:id="@+id/linearLayout"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignEnd="@+id/imgPhoto"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			android:layout_alignRight="@+id/imgPhoto"
+			android:layout_below="@id/imgPhoto"
+			android:layout_marginTop="5dp"
+			android:gravity="center"
+			android:orientation="vertical">
+
+			<TextView
+				android:id="@+id/txtName"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:ellipsize="end"
+				android:singleLine="true"
+				android:text="设备名称"
+				android:textColor="@color/body_text_color"
+				android:textSize="@dimen/title_text"/>
+
+			<TextView
+				android:id="@+id/txtDesc"
+				style="@style/sub_body_text"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_below="@id/txtName"
+				android:ellipsize="end"
+				android:gravity="center"
+				android:minHeight="14sp"
+				android:paddingBottom="7dp"
+				android:paddingTop="7dp"
+				android:singleLine="true"
+				android:text="设备描述"
+				android:textColor="@color/body_text_color"
+				android:visibility="gone"/>
+		</LinearLayout>
+	</RelativeLayout>
+
+</RelativeLayout>

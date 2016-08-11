@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<color name="common_white">#FFFFFF</color>
+	<color name="common_black">#000000</color>
+
+	<color name="colorPrimary">#3F51B5</color>
+	<color name="colorPrimaryDark">#303F9F</color>
+	<color name="colorAccent">#FF4081</color>
+	<color name="colorAccentPressed">#C43B6A</color>
+
+	<color name="body_text_color">#0e0d0d</color>
+	<color name="text_hint_color">#686868</color>
+	<color name="list_item_pressed">#7f303F9F</color>
+
+
+	<color name="green">#18ca18</color>
+
+	<!--内容条目分割线颜色-->
+	<color name="item_white">#e2dbdb</color>
+	<color name="divide_line_color">#e1e1e1</color>
+
+	<!--表盘颜色变化-->
+	<color name="start_color">#873F92</color>
+	<color name="end_color">#d71626</color>
+
+	<!--for ZXing-->
+	<color name="possible_result_points">#c0ffff00</color>
+	<color name="viewfinder_mask">#60000000</color>
+	<color name="result_view">#b0000000</color>
+	<color name="transparent">#00000000</color>
+
+	<color name="point_color">#00BCD4</color>
+	<color name="text_color">#D50000</color>
+	<color name="point_halo_color">#607D8B</color>
+	<color name="wheel_unactive_color">#BDBDBD</color>
+	<color name="wheel_active_color">#4CAF50</color>
+
+</resources>

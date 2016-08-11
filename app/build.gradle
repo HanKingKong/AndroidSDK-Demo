@@ -1,0 +1,67 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        applicationId "com.molmc.opensdkdemo"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+
+    signingConfigs {
+
+        debug {
+            // No debug config
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+    greendao {
+        targetGenDir 'src/main/java'
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.molmc.intorobot:opensdk:0.1.0'
+    // 事件总线
+    compile 'de.greenrobot:eventbus:2.4.0'
+    // 注解框架
+    compile 'com.jakewharton:butterknife:7.0.1'
+    // database
+    compile 'org.greenrobot:greendao:3.1.0'
+    //dialog
+    compile 'com.afollestad.material-dialogs:core:0.8.6.2'
+    // zxing
+    compile files('libs/core-3.2.1.jar')
+    // swipemenulistview
+    compile 'com.baoyz.swipemenulistview:library:1.3.0'
+    // ripple按钮
+    compile 'com.skyfishjy.ripplebackground:library:1.0.1'
+    // SlideSwitch
+    compile 'com.leaking.slideswitch:slideswitch:1.0.0'
+    // glide 图片显示
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.github.bumptech.glide:okhttp3-integration:1.4.0@aar'
+    compile 'jp.wasabeef:glide-transformations:2.0.1'
+    //仪表盘
+    compile 'com.superkung:dashboard-view:1.1.1'
+    //seekbar
+    compile 'com.github.JesusM:HoloCircleSeekBar:v2.2.2'
+}

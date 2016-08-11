@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="dashboard-view-1.1.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.superkung/dashboard-view/1.1.1/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.superkung/dashboard-view/1.1.1/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.superkung/dashboard-view/1.1.1/b2353ad03e603a5181d759e3f84ab32b9f44cb38/dashboard-view-1.1.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
