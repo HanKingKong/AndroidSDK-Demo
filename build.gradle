@@ -19,9 +19,6 @@ allprojects {
         jcenter()
         maven { url "https://jitpack.io" }
         maven { url 'https://dl.bintray.com/leaking/maven' }
-        maven {
-            url "https://dl.bintray.com/h124551753/maven"
-        }
     }
 }
 

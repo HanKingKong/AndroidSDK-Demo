@@ -50,7 +50,7 @@
 			android:name=".ui.activity.FragmentCommonActivity"/>
 
 		<!--Mqtt Service-->
-		<service android:name="com.molmc.opensdk.mqtt.MqttService"/>
+		<service android:name="com.molmc.opensdk.mqtt.service.MqttService"/>
 	</application>
 
 </manifest>
