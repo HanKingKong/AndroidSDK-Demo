@@ -53,7 +53,7 @@ dependencies {
     <service android:name="com.molmc.opensdk.mqtt.service.MqttService"/>
 ```
 
-* 【权限说明】
+* 权限说明
 | 权限 						| 用途    					 |
 |----------------------------|------------------------------|-
 |  CHANGE_WIFI_STATE    	 |  允许程序改变WiFi连接状态		  |
