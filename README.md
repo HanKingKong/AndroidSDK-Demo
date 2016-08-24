@@ -3,9 +3,6 @@ This is a demo which used Android SDK library.
 
 #Android 开发指南
 
-[TOC]
-
-
 ##1、概述
 IntoRobot接入方案概况
 * IntoRobot设备接入SDK（以下简称SDK）封装了手机与IntoRobot硬件设备的通讯协议，以及手机与IntoRobot云平台的通讯协议。这些协议包括配置入网，连接，设备状态监听，心跳等。使用SDK使得开发者能够快速完成App开发，开发者可以更加专注于界面的开发，提升App的用户体验。
@@ -55,10 +52,10 @@ dependencies {
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     ...
     <service android:name="com.molmc.opensdk.mqtt.service.MqttService"/>
-```
-【权限说明】
-| 权限 						| 用途    					  |
-|----------------------------|-------------------------------|
+``` <br/>
+【权限说明】<br/>
+| 权限 						| 用途    					 |
+|----------------------------|------------------------------|
 |  CHANGE_WIFI_STATE    	 |  允许程序改变WiFi连接状态		  |
 |  INTERNET			    	 |  允许程序打开网络接口			  |
 |  ACCESS_NETWORK_STATE   	 |  允许程序访问有关GSM网络信息 	 |
@@ -74,10 +71,9 @@ dependencies {
     compile 'com.molmc.intorobot:opensdk:0.3.0'
 }
 ```
-
 * 初始化SDK
 使用SDK之前，需要先初始化SDK。初始化需要用户指定SDK的App ID和App Key以及设置是否需要打印调试信息。
-继承Application类，在Application子类的onCreate方法中添加。
+继承Application类，在Application子类的onCreate方法中添加。<br/>
 **【方法调用】**
 ```java
 //初始化SDK
@@ -86,7 +82,7 @@ IntoRobotAPI.getInstance().initApp(getApplicationContext(), appId, appKey);
 IntoRobotAPI.getInstance().setDebug(true);
 ```
 其中 **appId** 即在开发平台上创建应用时生成的App ID，**appKey**为appId对应的密钥；
-其中 **setDebug**方法设置是否打印调试信息，默认为false，不打印调试信息。
+其中 **setDebug**方法设置是否打印调试信息，默认为false，不打印调试信息。<br/>
 **【代码示例】**
 ``` java
 import com.molmc.opensdk.openapi.IntoRobotAPI;
