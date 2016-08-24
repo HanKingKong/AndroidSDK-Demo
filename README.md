@@ -51,7 +51,7 @@ dependencies {
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     ...
     <service android:name="com.molmc.opensdk.mqtt.service.MqttService"/>
-```<br/>
+```
 【权限说明】<br/>
 | 权限 						| 用途    					 |
 |----------------------------|------------------------------|
