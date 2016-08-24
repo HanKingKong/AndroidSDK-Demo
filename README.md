@@ -35,10 +35,10 @@ dependencies {
 ```
 
 ##3、SDK流程简介
-工程配置
-* SDK集成流程图
+* SDK集成流程图<br/>
 ![](img/sdk_flow.png)
-* 配置AndroidManifest.xml
+
+* 配置AndroidManifest.xml<br/>
 【添加权限】
 将下面权限配置代码复制到AndroidManifest.xml文件中
 ``` xml
@@ -51,8 +51,8 @@ dependencies {
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     ...
     <service android:name="com.molmc.opensdk.mqtt.service.MqttService"/>
-```
-【权限说明】
+```<br/>
+【权限说明】<br/>
 | 权限 						| 用途    					 |
 |----------------------------|------------------------------|
 |  CHANGE_WIFI_STATE    	 |  允许程序改变WiFi连接状态		  |
