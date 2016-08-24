@@ -52,7 +52,8 @@ dependencies {
     ...
     <service android:name="com.molmc.opensdk.mqtt.service.MqttService"/>
 ```
-【权限说明】<br/>
+
+* 【权限说明】
 | 权限 						| 用途    					 |
 |----------------------------|------------------------------|-
 |  CHANGE_WIFI_STATE    	 |  允许程序改变WiFi连接状态		  |
@@ -62,6 +63,7 @@ dependencies {
 |  READ_EXTERNAL_STORAGE   	 |  允许程序读取外部SD卡 	       |
 |  WRITE_EXTERNAL_STORAGE  	 |  允许程序写入外部SD卡 	       |
 |  WAKE_LOCK			  	 |  允许程序保持唤醒 		        |
+
 * 添加SDK依赖库
 将下面都代码复制到工程Application的build.gradle文件中
 ```Groovy
