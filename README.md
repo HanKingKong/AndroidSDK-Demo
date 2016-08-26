@@ -27,13 +27,7 @@ SDK功能模块
 下载SDK Demo源码
 * [AndroidSDK-Demo](https://github.com/IntoRobot/AndroidSDK-Demo)
 
-导入SDK
-* 在项目工程application的build.gradle文件中添加依赖
-```Groovy
-dependencies {
-    compile 'com.molmc.intorobot:opensdk:0.3.0'
-}
-```
+
 
 ##3、SDK流程简介
 * SDK集成流程图<br/>
