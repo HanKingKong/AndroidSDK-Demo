@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.AlertDialogWrapper;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.molmc.opensdkdemo.R;
 import com.molmc.opensdkdemo.base.MyApplication;
 
@@ -99,7 +100,7 @@ public class DialogUtil {
 		}
 	}
 
-	public static void showDialog(Context context, String title, String msg, String negativebtn, String positivebtn, final Interface.DialogCallback callback){
+	public static void showDialog(Context context, String title, String msg, String negativebtn, String positivebtn, final Interface.DialogCallback callback) {
 		new AlertDialogWrapper.Builder(context)
 				.setTitle(title)
 				.setMessage(msg)
@@ -118,7 +119,7 @@ public class DialogUtil {
 				.show();
 	}
 
-	public static void showDialog(Context context, int title, int msg, int negativebtn, int positivebtn, final Interface.DialogCallback callback){
+	public static void showDialog(Context context, int title, int msg, int negativebtn, int positivebtn, final Interface.DialogCallback callback) {
 		new AlertDialogWrapper.Builder(context)
 				.setTitle(title)
 				.setMessage(msg)
@@ -137,7 +138,7 @@ public class DialogUtil {
 				.show();
 	}
 
-	public static void showConfirmDialog(Context context, String title, String msg, String positivebtn, final Interface.DialogCallback callback){
+	public static void showConfirmDialog(Context context, String title, String msg, String positivebtn, final Interface.DialogCallback callback) {
 		new AlertDialogWrapper.Builder(context)
 				.setTitle(title)
 				.setMessage(msg)
@@ -150,7 +151,7 @@ public class DialogUtil {
 				.show();
 	}
 
-	public static void showConfirmDialog(Context context, int title, int msg, int positivebtn, final Interface.DialogCallback callback){
+	public static void showConfirmDialog(Context context, int title, int msg, int positivebtn, final Interface.DialogCallback callback) {
 		new AlertDialogWrapper.Builder(context)
 				.setTitle(title)
 				.setMessage(msg)
@@ -160,6 +161,48 @@ public class DialogUtil {
 						callback.onPositive();
 					}
 				})
+				.show();
+	}
+
+	/**
+	 * 输入dialog
+	 *
+	 * @param context
+	 * @param title
+	 * @param callback
+	 */
+	public static void inputDialog(Context context, int title, MaterialDialog.InputCallback callback) {
+		new MaterialDialog.Builder(context)
+				.title(title)
+				.inputRangeRes(4, 20, R.color.colorPrimary)
+				.input(null, null, callback).show();
+	}
+
+	/**
+	 * list dialog
+	 * @param context
+	 * @param title
+	 * @param array
+	 * @param callback
+	 */
+	public static void listDialog(Context context, int title, int array, MaterialDialog.ListCallback callback) {
+		new MaterialDialog.Builder(context)
+				.title(title)
+				.items(array)
+				.itemsCallback(callback)
+				.show();
+	}
+
+
+	/**
+	 * menu dialog
+	 * @param context
+	 * @param menuArr
+	 * @param onItemClickListener
+	 */
+	public static void showMenuDialog(Context context, String[] menuArr, DialogInterface.OnClickListener onItemClickListener) {
+		new AlertDialogWrapper.Builder(context)
+				.setItems(menuArr, onItemClickListener)
 				.show();
 	}
 
@@ -175,8 +218,6 @@ public class DialogUtil {
 	}
 
 	/**
-	 *
-	 *
 	 * @param msgId
 	 */
 	public static void showToast(int msgId) {

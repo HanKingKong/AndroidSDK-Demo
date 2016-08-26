@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
@@ -11,21 +12,31 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.gson.Gson;
 import com.molmc.opensdk.bean.UserInfoBean;
 import com.molmc.opensdk.http.HttpCallback;
 import com.molmc.opensdk.http.TaskException;
 import com.molmc.opensdk.mqtt.ConnectCallback;
 import com.molmc.opensdk.openapi.IntoRobotAPI;
+import com.molmc.opensdk.utils.IntoUtil;
 import com.molmc.opensdk.utils.Logger;
 import com.molmc.opensdk.utils.StorageUtil;
 import com.molmc.opensdkdemo.R;
+import com.molmc.opensdkdemo.bean.UserInfo;
+import com.molmc.opensdkdemo.ui.fragment.ChangePwdFragment;
 import com.molmc.opensdkdemo.ui.fragment.DeviceListFragment;
 import com.molmc.opensdkdemo.ui.fragment.ImlinkNetworkFragment;
+import com.molmc.opensdkdemo.utils.Constant;
+import com.molmc.opensdkdemo.utils.DialogUtil;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -54,6 +65,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 	Toolbar toolbar;
 
 	private TextView userName;
+	private ImageView userHead;
 
 	private String mqttUser = "intorobot_admin";
 	private String mqttPwd = "intorobot_admin";
@@ -75,11 +87,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 		mainNav.setNavigationItemSelectedListener(this);
 
 		userName = (TextView) mainNav.getHeaderView(0).findViewById(R.id.userName);
+		userHead = (ImageView) mainNav.getHeaderView(0).findViewById(R.id.userHead);
+		userHead.setOnClickListener(headClickListener);
 		// 开启一个Fragment事务
 		FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 		fragmentTransaction.add(R.id.frameContent, DeviceListFragment.newInstance()).commit();
 		createMqtt();
-		test();
+		getUserInfo();
 	}
 
 	/**
@@ -102,10 +116,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 	}
 
 
-	private void test() {
-		if (!Logger.SDebug) {
-			return;
-		}
+	/**
+	 * 获取用户信息
+	 */
+	private void getUserInfo() {
 		IntoRobotAPI.getInstance().getUserInfo(StorageUtil.getInstance().getUserId(), new HttpCallback<UserInfoBean>() {
 			@Override
 			public void onSuccess(int code, UserInfoBean result) {
@@ -117,21 +131,53 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 				Logger.i(exception.getMessage());
 			}
 		});
-//		UserInfo userReq = new UserInfo();
-//		userReq.setUsername("uuu");
-//		IntoRobotAPI.getInstance().updateUserInfo(StorageUtil.getInstance().getUserId(), userReq, new HttpCallback() {
-//			@Override
-//			public void onSuccess(int code, Object result) {
-//				Logger.i(new Gson().toJson(result));
-//			}
-//
-//			@Override
-//			public void onFail(TaskException exception) {
-//				Logger.i(exception.getMessage());
-//			}
-//		});
+
 	}
 
+	private View.OnClickListener headClickListener = new View.OnClickListener(){
+
+		@Override
+		public void onClick(View v) {
+			DialogUtil.inputDialog(MainActivity.this, R.string.change_username, new MaterialDialog.InputCallback() {
+				@Override
+				public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+					changeUserInfo(input.toString());
+				}
+			});
+		}
+	};
+
+
+	/**
+	 * 修改用户昵称
+	 * @param nickname
+	 */
+	private void changeUserInfo(String nickname){
+		if (TextUtils.isEmpty(nickname)){
+			DialogUtil.showToast(R.string.err_nickname_empty);
+			return;
+		}
+		String account = StorageUtil.getInstance().getShareData(Constant.USER_ACCOUNT);
+		UserInfo userReq = new UserInfo();
+		userReq.setUsername(nickname);
+		if (IntoUtil.isEmail(account)){
+			userReq.setEmail(account);
+		}else{
+			userReq.setPhone(account);
+		}
+		Logger.i(new Gson().toJson(userReq));
+		IntoRobotAPI.getInstance().updateUserInfo(StorageUtil.getInstance().getUserId(), userReq, new HttpCallback() {
+			@Override
+			public void onSuccess(int code, Object result) {
+				DialogUtil.showToast(R.string.suc_change);
+			}
+
+			@Override
+			public void onFail(TaskException exception) {
+				DialogUtil.showToast(exception.getMessage());
+			}
+		});
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -154,9 +200,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 		} else if (id == R.id.menu_logout) {
 			IntoRobotAPI.getInstance().unSubscribeAll();
 			IntoRobotAPI.getInstance().disconnectMqtt();
-			Intent intent = new Intent(this, LoginActivity.class);
-			startActivity(intent);
-			this.finish();
+			IntoRobotAPI.getInstance().userLogout(StorageUtil.getInstance().getUserId(), new HttpCallback() {
+				@Override
+				public void onSuccess(int code, Object result) {
+					Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+					startActivity(intent);
+					MainActivity.this.finish();
+				}
+
+				@Override
+				public void onFail(TaskException exception) {
+					showToast(exception.getMessage());
+				}
+			});
 			return true;
 		} else if (id == R.id.menu_qr_scan) {
 			QRCaptureActivity.launch(this);
@@ -198,12 +254,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 		// Handle navigation view item clicks here.
 		int id = item.getItemId();
 
-		if (id == R.id.nav_camera) {
+		if (id == R.id.nav_change_userinfo) {
 			// Handle the camera action
-		} else if (id == R.id.nav_gallery) {
+			DialogUtil.inputDialog(MainActivity.this, R.string.change_username, new MaterialDialog.InputCallback() {
+				@Override
+				public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+					changeUserInfo(input.toString());
+				}
+			});
+		} else if (id == R.id.nav_change_password) {
+			ChangePwdFragment.launch(this);
+		} else if (id == R.id.nav_refresh_token) {
+			IntoRobotAPI.getInstance().refreshUserToken(new HttpCallback() {
+				@Override
+				public void onSuccess(int code, Object result) {
+					showToast(R.string.suc_refresh);
+				}
 
-		} else if (id == R.id.nav_slideshow) {
-
+				@Override
+				public void onFail(TaskException exception) {
+					showToast(exception.getMessage());
+				}
+			});
 		} else if (id == R.id.nav_manage) {
 
 		} else if (id == R.id.nav_share) {

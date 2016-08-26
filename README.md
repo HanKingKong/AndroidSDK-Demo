@@ -1,4 +1,5 @@
-# AndroidSDK-Demo
+#摩仑科技 开放平台 
+##AndroidSDK-Demo
 This is a demo which used Android SDK library.
 
 #Android 开发指南
@@ -70,7 +71,7 @@ dependencies {
 将下面都代码复制到工程Application的build.gradle文件中
 ```Groovy
 dependencies {
-    compile 'com.molmc.intorobot:opensdk:0.3.0'
+    compile 'com.molmc.intorobot:opensdk:0.4.0'
 }
 ```
 * 初始化SDK
@@ -311,6 +312,50 @@ IntoRobotAPI.getInstance().userLogin(userBean, new HttpCallback<UserTokenBean>()
     }
 });
 ```
+**用户退出登录**<br>
+当用户需要切换账号时，可调用此接口退出当前登陆，返回到登陆界面。用户调用此接口前应调用`IntoRobotAPI.getInstance().unSubscribeAll()`和`IntoRobotAPI.getInstance().disconnectMqtt()`将mqtt topic 取消订阅，并断开mqtt连接。
+【示例代码】
+```java
+IntoRobotAPI.getInstance().unSubscribeAll();
+IntoRobotAPI.getInstance().disconnectMqtt();
+IntoRobotAPI.getInstance().userLogout(StorageUtil.getInstance().getUserId(), new HttpCallback() {
+	@Override
+	public void onSuccess(int code, Object result) {
+		//TODO退出登陆成功
+	}
+
+	@Override
+	public void onFail(TaskException exception) {
+		//TODO退出登陆失败
+	}
+});
+```
+
+**修改用户信息**<br>
+用户登陆后，调用此接口可修改用户昵称，描述等信息，但不允许修改**email**，**phone**，**username**字段。
+【示例代码】
+```java
+String account = StorageUtil.getInstance().getShareData(Constant.USER_ACCOUNT);
+UserInfo userReq = new UserInfo();
+userReq.setUsername(nickname);
+if (IntoUtil.isEmail(account)){
+	userReq.setEmail(account);
+}else{
+	userReq.setPhone(account);
+}
+Logger.i(new Gson().toJson(userReq));
+IntoRobotAPI.getInstance().updateUserInfo(StorageUtil.getInstance().getUserId(), userReq, new HttpCallback() {
+	@Override
+	public void onSuccess(int code, Object result) {
+		//TODO 修改成功
+	}
+
+	@Override
+	public void onFail(TaskException exception) {
+		//TODO 修改失败
+	}
+});
+```
 * 重置密码
 用户忘记密码时，可用重置密码接口找回密码。忘记密码需调用获取验证码接口，向服务器发送获取手机验证码或邮箱验证码请求，App得到验证码后发送重置密码接口。
 【示例代码】
@@ -334,6 +379,37 @@ IntoRobotAPI.getInstance().resetUserPassword(userBean, new HttpCallback() {
     public void onFail(TaskException exception) {
         // TODO 重置失败
     }
+});
+```
+**修改密码**<br>
+用户登陆后，可调用此接口更换密码，用户输入当前密码，并输入新密码，更换密码成功后，退出到登陆界面，进行重新输入新密码登陆账号。
+【示例代码】
+```java
+final String uid = StorageUtil.getInstance().getUserId();
+IntoRobotAPI.getInstance().updateUserPassword(uid, oldPwd, newPwd1, new HttpCallback() {
+	@Override
+	public void onSuccess(int code, Object result) {
+		showToast(R.string.suc_change);
+		IntoRobotAPI.getInstance().unSubscribeAll();
+		IntoRobotAPI.getInstance().disconnectMqtt();
+		StorageUtil.getInstance().putShareData(Constant.USER_PASSWORD, "");
+		IntoRobotAPI.getInstance().userLogout(uid, new HttpCallback() {
+			@Override
+			public void onSuccess(int code, Object result) {
+				//TODO 修改新密码成功
+			}
+
+			@Override
+			public void onFail(TaskException exception) {
+				//TODO 修改密码失败
+			}
+		});
+	}
+
+	@Override
+	public void onFail(TaskException exception) {
+		showToast(exception.getMessage());
+	}
 });
 ```
 ###4.2、设备部分
@@ -410,6 +486,29 @@ IntoRobotAPI.getInstance().getDeviceInfo(device.getDeviceId(), new HttpCallback<
     public void onFail(TaskException exception) {
         // TODO 获取失败
     }
+});
+```
+**修改设备信息**<br>
+修改设备信息，此接口可用于修改设备名称，描述等信息，修改设备信息以后，需要刷新设备列表界面。但此接口不允许修改设备的**deviceId**，**productId**字段。<br>
+【示例代码】
+```java
+DeviceBean mDeviceReq = new DeviceBean();
+mDeviceReq.setName(devName);
+mDeviceReq.setDescription(devDesc);
+IntoRobotAPI.getInstance().updateDeviceInfo(mDevice.getDeviceId(), mDeviceReq, new HttpCallback() {
+	@Override
+	public void onSuccess(int code, Object result) {
+		showToast(R.string.suc_save);
+		mDevice.setName(devName);
+		mDevice.setDescription(devDesc);
+		EventBus.getDefault().post(new UpdateDevice(mDevice));
+		getActivity().finish();
+	}
+
+	@Override
+	public void onFail(TaskException exception) {
+		showToast(exception.getMessage());
+	}
 });
 ```
 * 删除设备
@@ -550,64 +649,45 @@ IntoRobotAPI.getInstance().unsubscribeTopic(deviceId, sensor, new UnSubscribeLis
 IntoRobotAPI.getInstance().disconnectMqtt();
 ```
 
-##5、返回码说明
-| 返回码                |   说明                | 返回码                |   说明                | 返回码                |   说明                | 返回码                |   说明                |
-|-----------------------|:---------------------:|-----------------------|:---------------------:|-----------------------|:---------------------:|-----------------------|:---------------------:|-
-|   50101               |   系统错误			|   40001               |   错误调用			    |   40114               |   激活码过期			    |   41210               |   设备需要解锁		    |
-|   50102               |   系统错误			|   40002               |   参数错误			    |   40115               |   账户已被冻结	    	|   41211               |   设备需要解锁		    |
-|   50103               |   系统错误			|   40003               |   不允许			    |   40116               |   请求sms vldCode太频繁  |   41212               |   数量限制			    |
-|   50104               |   系统错误			|   40004               |   资源不存在			|   40117               |   注册太频繁			    |   41213               |   未知型号			    |
-|   50105               |   系统错误			|   40005               |   数据错误			    |   40118               |   忘记密码太频繁		    |   41214               |   缺少phyDeviceId		|
-|   50106               |   系统错误			|   40006               |   uid不匹配			    |   40152               |   需要重登陆			    |   1100                |   Imlink建立失败		    |
-|   50201               |   系统错误			|   40007               |   device id不匹配		|   40154               |   需要刷新token		    |   1101                |   获取WiFi IP地址失败	|
-|   50202               |   系统错误			|   40008               |   id不合法			    |   40153               |   缺少refreshToken	    |   1102                |   接收数据解析错误	    |
-|   50203               |   系统错误			|   40009               |   缺少id			    |   40301               |   字段类型错误		    |   1103                |   UDP接收数据失败		|
-|   50204               |   系统错误			|   40010               |   缺少vrfID			    |   40302               |   数量限制			    |   1104                |   socket连接错误		    |
-|   50205               |   系统错误			|   40011               |   验证码错误			|   40303               |   用户系统被引用		    |   1105                |   发送数据，未知主机	    |
-|   50206               |   系统错误			|   40012               |   content type错误	    |   40304               |   用户系统不存在		    |   1106                |   UDP发送数据失败		|
-|   50207               |   系统错误			|   40013               |   size错误			    |   40401               |   没有权限			    |   1107                |   发送数据解析错误	    |
-|   50208               |   系统错误			|   40014               |   间隔错误			    |   40402               |   数量限制			    |   1108                |   设备握手响应超时	    |
-|   50209               |   系统错误			|   40015               |   缓存过期			    |   40403               |   App被引用			    |   1109                |   设备设置平台信息超时   |
-|   50301               |   系统错误			|   40016               |   验证码过期			|   40404               |   App不存在			    |   1110                |   设备不可用			    |
-|   50302               |   系统错误			|   40017               |   已经存在			    |   40405               |   没有appToken		    |   1111                |   创建设备超时		    |
-|   50303               |   系统错误			|   40018               |   名称重复			    |   40406               |   token过期			    |   1200                |   创建设备成功		    |
-|   50304               |   系统错误			|   40020               |   请重试			    |   40502               |   数量限制			    |   -100                |   网络错误               |
-|   50305               |   系统错误			|   40021               |   请求太频繁			|   40503               |   字段类型错误		    |
-|   50306               |   系统错误			|   40022               |   name不合法			|   40504               |   产品不存在			    |
-|   50307               |   系统错误			|   40023               |   zone不合法			|   40505               |   已经在申请流程中  	    |
-|   50308               |   系统错误			|   40024               |   sms数量限制			|   40506               |   不在申请流程中		    |
-|   50309               |   系统错误			|   40025               |   签名错误			    |   40602               |   数量限制			    |
-|   50310               |   系统错误			|   40026               |   Header错误			|   40603               |   字段类型错误		    |
-|   50311               |   系统错误			|   40027               |   上传内容缺失		    |   40604               |   解决方案不存在		    |
-|   50312               |   系统错误			|   40101               |   用户未注册			|   41001               |   appid不匹配			|
-|   50313               |   系统错误			|   40102               |   用户未激活			|   41101               |   时间戳太旧			    |
-|   50314               |   系统错误			|   40103               |   密码错误			    |   41102               |   Auth字段不正确		    |
-|   50315               |   系统错误			|   40104               |   缺少stateID			|   41104               |   token不存在			|
-|   50316               |   系统错误			|   40105               |   state码错误			|   41201               |   device坐标参数错误	    |
-|   50317               |   系统错误			|   40106               |   openid已绑定		    |   41202               |   device纬度参数错误	    |
-|   50318               |   系统错误			|   40107               |   帐号已绑定			|   41203               |   device经度参数错误	    |
-|   50319               |   系统错误			|   40108               |   用户名已存在		    |   41204               |   设备id已注册		    |
-|   50320               |   系统错误			|   40109               |   邮箱已注册			|   41205               |   设备id未注册		    |
-|   50321               |   系统错误			|   40110               |   手机号已注册		    |   41206               |   设备id不合法		    |
-|   50322               |   系统错误			|   40111               |   需要重登陆			|   41207               |   设备需要在线		    |
-|   50323               |   系统错误			|   40112               |   用户名不合法		    |   41208               |   不是设备拥有者		    |
-|   50324               |   系统错误			|   40113               |   已关注该用户		    |   41209               |   正在更新token		    |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## 5 返回码说明
+| 返回码                |   说明                | 返回码                |   说明                | 返回码                |   说明                                | 返回码            |   说明                |
+|-----------------------|:---------------------:|-----------------------|:---------------------:|-----------------------|:-------------------------------------:|-------------------|:---------------------:|-
+|   50101               |   系统错误			|   40001               |   错误调用			|   40114               |   激活码过期			                |   41205           |   设备id未注册	    |
+|   50102               |   系统错误			|   40002               |   参数错误			|   40115               |   账户已被冻结	    	            |   41206           |   设备id不合法	    |
+|   50103               |   系统错误			|   40003               |   不允许			    |   40116               |   请求sms vldCode太频繁               |   41207           |   设备需要在线	    |
+|   50104               |   系统错误			|   40004               |   资源不存在			|   40117               |   注册太频繁			                |   41208           |   不是设备拥有者	    |
+|   50105               |   系统错误			|   40005               |   数据错误			|   40118               |   忘记密码太频繁		                |   41209           |   正在更新token		|
+|   50106               |   系统错误			|   40006               |   uid不匹配			|   40152               |   需要重登陆			                |   41210           |   设备需要解锁		|
+|   50201               |   系统错误			|   40007               |   device id不匹配		|   40154               |   需要刷新token		                |   41211           |   设备需要解锁		|
+|   50202               |   系统错误			|   40008               |   id不合法			|   40153               |   缺少refreshToken	                |   41212           |   数量限制			|
+|   50203               |   系统错误			|   40009               |   缺少id			    |   40155               |   email,phone和username字段不允许修改 |   41213           |   未知型号			|
+|   50204               |   系统错误			|   40010               |   缺少vrfID			|   40301               |   字段类型错误		                |   41214           |   缺少phyDeviceId		|
+|   50205               |   系统错误			|   40011               |   验证码错误			|   40302               |   数量限制			                |   1100            |   Imlink建立失败		|
+|   50206               |   系统错误			|   40012               |   content type错误	|   40303               |   用户系统被引用		                |   1101            |   获取WiFi IP地址失败	|
+|   50207               |   系统错误			|   40013               |   size错误			|   40304               |   用户系统不存在		                |   1102            |   接收数据解析错误	|
+|   50208               |   系统错误			|   40014               |   间隔错误			|   40305               |   无效字段名                          |   1103            |   UDP接收数据失败		|
+|   50209               |   系统错误			|   40015               |   缓存过期			|   40306               |   缺少关键字段                        |   1104            |   socket连接错误		|
+|   50301               |   系统错误			|   40016               |   验证码过期			|   40401               |   没有权限			                |   1105            |   发送数据，未知主机	|
+|   50302               |   系统错误			|   40017               |   已经存在			|   40402               |   数量限制			                |   1106            |   UDP发送数据失败		|
+|   50303               |   系统错误			|   40018               |   名称重复			|   40403               |   App被引用			                |   1107            |   发送数据解析错误	|
+|   50304               |   系统错误			|   40020               |   请重试			    |   40404               |   App不存在			                |   1108            |   设备握手响应超时	|
+|   50305               |   系统错误			|   40021               |   请求太频繁			|   40405               |   没有appToken		                |   1109            |   设备设置平台信息超时|
+|   50306               |   系统错误			|   40022               |   name不合法			|   40406               |   token过期			                |   1110            |   设备不可用			|
+|   50307               |   系统错误			|   40023               |   zone不合法			|   40501               |   无效传感器名                        |   1111            |   创建设备超时		|
+|   50308               |   系统错误			|   40024               |   sms数量限制			|   40502               |   数量限制			                |   1200            |   创建设备成功		|
+|   50309               |   系统错误			|   40025               |   签名错误			|   40503               |   字段类型错误		                |   -100            |   网络错误            |
+|   50310               |   系统错误			|   40026               |   Header错误			|   40504               |   产品不存在			                |
+|   50311               |   系统错误			|   40027               |   上传内容缺失		|   40505               |   已经在申请流程中  	                |
+|   50312               |   系统错误			|   40101               |   用户未注册			|   40506               |   不在申请流程中		                |
+|   50313               |   系统错误			|   40102               |   用户未激活			|   40507               |   未绑定App                           |
+|   50314               |   系统错误			|   40103               |   密码错误			|   40602               |   数量限制			                |
+|   50315               |   系统错误			|   40104               |   缺少stateID			|   40603               |   字段类型错误		                |
+|   50316               |   系统错误			|   40105               |   state码错误			|   40604               |   解决方案不存在		                |
+|   50317               |   系统错误			|   40106               |   openid已绑定		|   41001               |   appid不匹配			                |
+|   50318               |   系统错误			|   40107               |   帐号已绑定			|   41101               |   时间戳太旧			                |
+|   50319               |   系统错误			|   40108               |   用户名已存在		|   41102               |   Auth字段不正确		                |
+|   50320               |   系统错误			|   40109               |   邮箱已注册			|   41104               |   token不存在			                |
+|   50321               |   系统错误			|   40110               |   手机号已注册		|   41201               |   device坐标参数错误	                |
+|   50322               |   系统错误			|   40111               |   需要重登陆			|   41202               |   device纬度参数错误	                |
+|   50323               |   系统错误			|   40112               |   用户名不合法		|   41203               |   device经度参数错误	                |
+|   50324               |   系统错误			|   40113               |   已关注该用户		|   41204               |   设备id已注册		                |

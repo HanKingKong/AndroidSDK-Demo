@@ -2,6 +2,7 @@ package com.molmc.opensdkdemo.support.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +22,8 @@ import com.molmc.opensdk.utils.Logger;
 import com.molmc.opensdkdemo.R;
 import com.molmc.opensdkdemo.bean.DeviceProduct;
 import com.molmc.opensdkdemo.ui.fragment.DeviceFragment;
+import com.molmc.opensdkdemo.ui.fragment.DeviceInfoFragment;
 import com.molmc.opensdkdemo.utils.DialogUtil;
-import com.molmc.opensdkdemo.utils.Interface;
 
 import java.util.List;
 
@@ -159,26 +160,33 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.ViewHolder
 		return new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				DialogUtil.showDialog(mContext, R.string.tips, R.string.device_delete, R.string.cancel, R.string.confirm, new Interface.DialogCallback() {
+				String[] menu = mContext.getResources().getStringArray(R.array.device_menu);
+				DialogUtil.showMenuDialog(mContext, menu, new DialogInterface.OnClickListener() {
 					@Override
-					public void onNegative() {
-
-					}
-
-					@Override
-					public void onPositive() {
-						IntoRobotAPI.getInstance().deleteDevice(device.getDeviceId(), new HttpCallback() {
-							@Override
-							public void onSuccess(int code, Object result) {
-								mDeviceList.remove(position);
-								notifyDataSetChanged();
+					public void onClick(DialogInterface dialog, int which) {
+						switch (which){
+							//查看设备信息
+							case 0:{
+								DeviceInfoFragment.launch((Activity) mContext, device);
+								break;
 							}
+							//删除设备
+							case 1:{
+								IntoRobotAPI.getInstance().deleteDevice(device.getDeviceId(), new HttpCallback() {
+									@Override
+									public void onSuccess(int code, Object result) {
+										mDeviceList.remove(position);
+										notifyDataSetChanged();
+									}
 
-							@Override
-							public void onFail(TaskException exception) {
-								DialogUtil.showToast(exception.getMessage());
+									@Override
+									public void onFail(TaskException exception) {
+										DialogUtil.showToast(exception.getMessage());
+									}
+								});
+								break;
 							}
-						});
+						}
 					}
 				});
 				return true;

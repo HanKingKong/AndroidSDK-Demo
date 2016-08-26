@@ -1,5 +1,6 @@
 package com.molmc.opensdkdemo.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -21,11 +22,17 @@ import com.molmc.opensdk.openapi.IntoRobotAPI;
 import com.molmc.opensdk.utils.Logger;
 import com.molmc.opensdkdemo.R;
 import com.molmc.opensdkdemo.support.adapter.DeviceAdapter;
+import com.molmc.opensdkdemo.support.eventbus.UpdateDevice;
 import com.molmc.opensdkdemo.support.views.ListRecyclerView;
 import com.molmc.opensdkdemo.ui.activity.FragmentCommonActivity;
+import com.molmc.opensdkdemo.ui.activity.LoginActivity;
+import com.molmc.opensdkdemo.utils.DialogUtil;
+import com.molmc.opensdkdemo.utils.Interface;
 import com.molmc.opensdkdemo.utils.Utils;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,6 +81,7 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.lay_refresh_list, container, false);
 		ButterKnife.bind(this, view);
+		EventBus.getDefault().register(this);
 		return view;
 	}
 
@@ -147,6 +155,23 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
 		} else {
 			layoutEmpty.setVisibility(View.GONE);
 		}
+		if (exception.getCode().equals("40153")){
+			DialogUtil.showConfirmDialog(getActivity(), R.string.err_tips, R.string.err_login_expire, R.string.confirm, new Interface.DialogCallback() {
+				@Override
+				public void onNegative() {
+
+				}
+
+				@Override
+				public void onPositive() {
+					IntoRobotAPI.getInstance().unSubscribeAll();
+					IntoRobotAPI.getInstance().disconnectMqtt();
+					Intent intent = new Intent(getActivity(), LoginActivity.class);
+					startActivity(intent);
+					getActivity().finish();
+				}
+			});
+		}
 	}
 
 	private void subDeviceStatus(){
@@ -165,6 +190,14 @@ public class DeviceListFragment extends BaseFragment implements SwipeRefreshLayo
 					showToast(errMsg);
 				}
 			}, this);
+		}
+	}
+
+
+	@Subscribe
+	public void onEventMainThread(UpdateDevice event){
+		if (event.getDeviceBean()!=null){
+			onRefresh();
 		}
 	}
 

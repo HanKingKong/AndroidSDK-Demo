@@ -76,19 +76,6 @@ public class DeviceFragment extends BaseFragment {
 		baseActivity.getSupportActionBar().setTitle(deviceProduct.getDevice().getName());
 		setHasOptionsMenu(false);
 		setDeviceWidget();
-//		DeviceBean deviceBeanReq = new DeviceBean();
-//		deviceBeanReq.setName("jiao-jiao");
-//		IntoRobotAPI.getInstance().updateDeviceInfo(mDevice.getDeviceId(), deviceBeanReq, new HttpCallback() {
-//			@Override
-//			public void onSuccess(int code, Object result) {
-//				Logger.i(new Gson().toJson(result));
-//			}
-//
-//			@Override
-//			public void onFail(TaskException exception) {
-//				Logger.i(exception.getMessage());
-//			}
-//		});
 	}
 
 	private void setDeviceWidget() {
@@ -149,11 +136,17 @@ public class DeviceFragment extends BaseFragment {
 		}
 	}
 
+
+
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
 		ButterKnife.unbind(this);
+	}
 
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
 	}
 
 	@OnClick(R.id.pubData)
