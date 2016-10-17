@@ -1,6 +1,6 @@
 #摩仑科技 开放平台 
 ##AndroidSDK-Demo
-This is a demo which used Android SDK library.
+This is a demo which is base on Android SDK library.
 
 #Android 开发指南
 
